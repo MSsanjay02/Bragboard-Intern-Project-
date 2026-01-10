@@ -15,8 +15,15 @@ export default function Dashboard() {
         <p className="text-gray-600 mt-2">You are logged in ✅</p>
 
         <button
+          onClick={() => navigate("/feed")}
+          className="mt-6 px-4 py-2 bg-black text-white rounded-lg"
+        >
+          Go to Feed 🚀
+        </button>
+
+        <button
           onClick={logout}
-          className="mt-6 px-4 py-2 bg-red-600 text-white rounded-lg"
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg"
         >
           Logout
         </button>
