@@ -3,6 +3,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Feed from "./pages/Feed";
+import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -38,6 +40,24 @@ export default function App() {
             </PrivateRoute>
           }
         />
+        <Route
+  path="/profile"
+  element={
+    <PrivateRoute>
+      <Profile />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/leaderboard"
+  element={
+    <PrivateRoute>
+      <Leaderboard />
+    </PrivateRoute>
+  }
+/>
+
       </Routes>
     </BrowserRouter>
   );

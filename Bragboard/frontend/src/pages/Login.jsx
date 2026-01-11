@@ -7,7 +7,6 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   const submit = async (e) => {
@@ -16,15 +15,29 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await API.post("/auth/login", {
-        email,
-        password,
+      // ✅ OAuth2PasswordRequestForm expects "username" + "password" in form-urlencoded
+      const formData = new URLSearchParams();
+      formData.append("username", email);
+      formData.append("password", password);
+
+      const res = await API.post("/auth/login", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       });
 
       localStorage.setItem("token", res.data.access_token);
       navigate("/feed");
     } catch (err) {
-      alert(err?.response?.data?.detail || "Login failed");
+      console.log("LOGIN ERROR:", err);
+      console.log("LOGIN RESPONSE:", err?.response?.data);
+
+      const msg =
+        err?.response?.data?.detail ||
+        err?.response?.data ||
+        "Login failed";
+
+      alert(typeof msg === "string" ? msg : JSON.stringify(msg));
     } finally {
       setLoading(false);
     }
@@ -39,14 +52,19 @@ export default function Login() {
             <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur border border-white/20" />
             <div>
               <h1 className="text-2xl font-bold text-white">BragBoard</h1>
-              <p className="text-sm text-white/80">Celebrate wins. Build culture.</p>
+              <p className="text-sm text-white/80">
+                Celebrate wins. Build culture.
+              </p>
             </div>
           </div>
 
           <div className="text-white/90">
-            <p className="text-lg font-semibold">✨ One shout-out can change morale.</p>
+            <p className="text-lg font-semibold">
+              ✨ One shout-out can change morale.
+            </p>
             <p className="text-sm mt-2 text-white/80">
-              Appreciate peers, track recognition, and create a positive team culture.
+              Appreciate peers, track recognition, and create a positive team
+              culture.
             </p>
           </div>
         </div>
