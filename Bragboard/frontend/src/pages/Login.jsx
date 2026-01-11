@@ -1,63 +1,113 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import API from "../api";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await API.post("/auth/login", form);
+      setLoading(true);
+
+      const res = await API.post("/auth/login", {
+        email,
+        password,
+      });
+
       localStorage.setItem("token", res.data.access_token);
-      navigate("/dashboard");
+      navigate("/feed");
     } catch (err) {
       alert(err?.response?.data?.detail || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-md"
-      >
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-3xl border border-zinc-800 shadow-xl">
+        {/* Left Branding */}
+        <div className="hidden md:flex flex-col justify-between p-10 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur border border-white/20" />
+            <div>
+              <h1 className="text-2xl font-bold text-white">BragBoard</h1>
+              <p className="text-sm text-white/80">Celebrate wins. Build culture.</p>
+            </div>
+          </div>
 
-        <input
-          className="w-full p-2 border rounded mb-3"
-          placeholder="Email"
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="w-full p-2 border rounded mb-6"
-          placeholder="Password"
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+          <div className="text-white/90">
+            <p className="text-lg font-semibold">✨ One shout-out can change morale.</p>
+            <p className="text-sm mt-2 text-white/80">
+              Appreciate peers, track recognition, and create a positive team culture.
+            </p>
+          </div>
+        </div>
 
-        <button className="w-full bg-black text-white py-2 rounded-lg">
-          Login
-        </button>
+        {/* Right Login Card */}
+        <div className="bg-zinc-950 p-8 md:p-10">
+          <div className="md:hidden mb-6">
+            <h1 className="text-2xl font-bold text-white">BragBoard</h1>
+            <p className="text-sm text-zinc-400">Welcome back 👋</p>
+          </div>
 
-        <p className="text-center mt-4 text-sm">
-          No account?{" "}
-          <Link className="text-blue-600 underline" to="/register">
-            Register
-          </Link>
-        </p>
-      </form>
+          <h2 className="text-2xl font-bold text-white">Sign in</h2>
+          <p className="text-sm text-zinc-400 mt-1">
+            Login with your employee credentials.
+          </p>
+
+          <form onSubmit={submit} className="mt-8 space-y-4">
+            <div>
+              <label className="text-sm text-zinc-300">Email</label>
+              <input
+                type="email"
+                className="mt-2 w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-zinc-300">Password</label>
+              <input
+                type="password"
+                className="mt-2 w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              disabled={loading}
+              className="w-full py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-pink-500 text-white hover:opacity-90 transition disabled:opacity-50"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-sm text-zinc-400">
+            New user?{" "}
+            <Link to="/register" className="text-indigo-400 hover:underline">
+              Create account
+            </Link>
+          </p>
+
+          <p className="mt-3 text-xs text-zinc-600">
+            Built by Sanjay • BragBoard v1
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
