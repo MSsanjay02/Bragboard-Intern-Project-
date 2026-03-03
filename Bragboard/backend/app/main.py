@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import CORS_ORIGINS
 from app.database import Base, engine
 from app.routers import auth,leaderboard, users, shoutouts, interactions
 
@@ -8,10 +9,9 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="BragBoard API")
 
-# ✅ DEV CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # dev only
+    allow_origins=CORS_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
